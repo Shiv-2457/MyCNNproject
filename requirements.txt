@@ -1,5 +1,5 @@
 streamlit==1.42.0
-tensorflow==2.16.0  # Use latest compatible version
+tensorflow==2.16.0
 numpy
 pandas
 matplotlib
