@@ -6,7 +6,7 @@ from tensorflow.keras.models import load_model
 from tensorflow.keras.preprocessing.image import img_to_array
 
 # Load the trained model
-MODEL_PATH = "waste_classification_model.h5"  # Ensure this file is uploaded
+MODEL_PATH = "wasteclassification.keras"  # Ensure this file is uploaded
 model = load_model(MODEL_PATH)
 
 # Define class labels
