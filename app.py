@@ -1,62 +1,38 @@
+import streamlit as st
 import numpy as np
-import pandas as pd
-import matplotlib.pyplot as plt
+import tensorflow as tf
 import cv2
-from tqdm import tqdm
-import warnings
-warnings.filterwarnings('ignore')
+from tensorflow.keras.models import load_model
+from tensorflow.keras.preprocessing.image import img_to_array
 
-from tensorflow.keras.models import Sequential
-from tensorflow.keras.layers import Conv2D, MaxPooling2D, Activation, Dropout, Flatten, Dense, BatchNormalization
-from tensorflow.keras.preprocessing.image import ImageDataGenerator, img_to_array, load_img
-from tensorflow.keras.utils import plot_model
-from glob import glob
+# Load the trained model
+MODEL_PATH = "waste_classification_model.h5"  # Ensure this file is uploaded
+model = load_model(MODEL_PATH)
 
-model = Sequential()
+# Define class labels
+class_labels = ['Recyclable Waste', 'Organic Waste']  # Adjust based on your training labels
 
-model.add(Conv2D(32, (3, 3), input_shape=(224, 224, 3)))
-model.add(Activation('relu'))
-model.add(MaxPooling2D())
+# Function to preprocess the uploaded image
+def preprocess_image(image):
+    image = cv2.cvtColor(image, cv2.COLOR_BGR2RGB)  # Convert BGR to RGB
+    image = cv2.resize(image, (224, 224))  # Resize to model input size
+    image = img_to_array(image) / 255.0  # Normalize
+    image = np.expand_dims(image, axis=0)  # Expand dims for model
+    return image
 
-model.add(Conv2D(64, (3, 3)))
-model.add(Activation('relu'))
-model.add(MaxPooling2D())
+# Streamlit UI
+st.title("♻️ Waste Classification App")
+st.write("Upload an image to classify whether it's **Recyclable or Organic Waste**.")
 
-model.add(Conv2D(128, (3, 3)))
-model.add(Activation('relu'))
-model.add(MaxPooling2D())
+uploaded_file = st.file_uploader("Choose an image...", type=["jpg", "png", "jpeg"])
 
-model.add(Flatten())
-
-model.add(Dense(256))
-model.add(Activation('relu'))
-model.add(Dropout(0.5))
-model.add(Dense(64))
-model.add(Activation('relu'))
-model.add(Dropout(0.5))
-
-model.add(Dense(2))
-model.add(Activation('sigmoid'))
-
-model.compile(loss = "binary_crossentropy",
-              optimizer = "adam",
-              metrics = ["accuracy"])
-batch_size = 256
-
-
-
-train_datagen = ImageDataGenerator(rescale = 1./255)
-test_datagen = ImageDataGenerator(rescale = 1./255)
-
-def predict_fun(img):
-  plt.figure(figsize=(6, 4))
-  plt.imshow(cv2.cvtColor(img, cv2.COLOR_BGR2RGB))
-  plt.tight_layout()
-  img = cv2.resize(img, (224, 224))
-  img = np.reshape(img, [-1, 224, 224, 3])
-  result = np.argmax(model.predict(img))
-  if result == 0:
-    print('The image shown is Recyclable Waste')
-  elif result == 1:
-    print('The image shown is Organic Waste')
-     
+if uploaded_file is not None:
+    file_bytes = np.asarray(bytearray(uploaded_file.read()), dtype=np.uint8)
+    image = cv2.imdecode(file_bytes, 1)  # Convert to image format
+    st.image(image, caption="Uploaded Image", use_column_width=True)
+    
+    processed_image = preprocess_image(image)
+    prediction = model.predict(processed_image)
+    class_index = np.argmax(prediction)
+    
+    st.write(f"### 🏷️ Predicted Class: **{class_labels[class_index]}**")
