@@ -1,25 +1,32 @@
-# 📦 MY project
-```
-⬆️ (Replace above with your app's name)
-```
+# Waste Classification using CNN 🚀
 
-Description of the app ...
+## 📌 Project Overview
+This is a **Deep Learning-based Waste Classification App** that uses a **Convolutional Neural Network (CNN)** to classify waste images into categories like **Plastic, Paper, Glass, Metal, and Other**.
 
-## Demo App
+The app is built with **TensorFlow, OpenCV, and Streamlit** for easy deployment.
 
-[![Streamlit App](https://static.streamlit.io/badges/streamlit_badge_black_white.svg)](https://MyCNNproject.streamlit.app/)
+---
 
-## GitHub Codespaces
+## 📂 Files & Directories
+- **app.py** - The main Streamlit app script.
+- **waste_classification_model.keras** - The trained CNN model.
+- **requirements.txt** - The list of dependencies.
+- **README.txt** - Instructions on how to use the project.
+- **data/** - Folder containing sample images (optional).
 
-[![Open in GitHub Codespaces](https://github.com/codespaces/badge.svg)](https://codespaces.new/streamlit/app-starter-kit?quickstart=1)
+---
 
-## Section Heading
+## 🚀 How to Deploy Online on Streamlit Cloud
+1️⃣ **Fork this repository on GitHub**  
+2️⃣ **Go to [Streamlit Cloud](https://share.streamlit.io/)**  
+3️⃣ **Click "Deploy an App"**  
+4️⃣ **Connect your GitHub repository**  
+5️⃣ **Set the main file as `app.py`**  
+6️⃣ **Click "Deploy"** 🎉
 
-This is filler text, please replace this with text for this section.
+---
 
-## Further Reading
-
-This is filler text, please replace this with a explanatory text about further relevant resources for this repo
-- Resource 1
-- Resource 2
-- Resource 3
+## 🖥️ How to Run Locally (Optional)
+### **1️⃣ Install Dependencies**
+```sh
+pip install -r requirements.txt
