@@ -1,38 +1,58 @@
 import streamlit as st
 import numpy as np
-import tensorflow as tf
 import cv2
-from tensorflow.keras.models import load_model
-from tensorflow.keras.preprocessing.image import img_to_array
+import tensorflow as tf
+from PIL import Image
+import requests
+from io import BytesIO
 
 # Load the trained model
-MODEL_PATH = "wasteclassification.keras"  # Ensure this file is uploaded
-model = load_model(MODEL_PATH)
+model = tf.keras.models.load_model("wasteclassification.keras")
 
 # Define class labels
-class_labels = ['Recyclable Waste', 'Organic Waste']  # Adjust based on your training labels
-
-# Function to preprocess the uploaded image
-def preprocess_image(image):
-    image = cv2.cvtColor(image, cv2.COLOR_BGR2RGB)  # Convert BGR to RGB
-    image = cv2.resize(image, (224, 224))  # Resize to model input size
-    image = img_to_array(image) / 255.0  # Normalize
-    image = np.expand_dims(image, axis=0)  # Expand dims for model
-    return image
+labels = ["Recyclable Waste", "Organic Waste"]
 
 # Streamlit UI
+st.set_page_config(page_title="Waste Classification App", layout="wide")
+
+st.sidebar.info(
+    "**About**\n\n"
+    "- This project uses a **CNN model** to classify waste into **Organic** or **Recyclable**.\n"
+    "- **Dataset Provider:** Techsash (Kaggle)\n"
+    "- **Model Algorithm:** Skills4Future\n"
+    "- **Future Improvements:** Classification based on **plastic types, recyclables, etc.**\n"
+)
+
 st.title("♻️ Waste Classification App")
-st.write("Upload an image to classify whether it's **Recyclable or Organic Waste**.")
 
-uploaded_file = st.file_uploader("Choose an image...", type=["jpg", "png", "jpeg"])
+uploaded_file = st.file_uploader("📤 Upload an image for classification", type=["jpg", "png", "jpeg"])
+img_url = st.text_input("🔗 Or enter an Image URL for Classification:")
 
-if uploaded_file is not None:
-    file_bytes = np.asarray(bytearray(uploaded_file.read()), dtype=np.uint8)
-    image = cv2.imdecode(file_bytes, 1)  # Convert to image format
-    st.image(image, caption="Uploaded Image", use_column_width=True)
-    
-    processed_image = preprocess_image(image)
-    prediction = model.predict(processed_image)
-    class_index = np.argmax(prediction)
-    
-    st.write(f"### 🏷️ Predicted Class: **{class_labels[class_index]}**")
+if uploaded_file or img_url:
+    try:
+        if uploaded_file:
+            img = Image.open(uploaded_file)
+        else:
+            response = requests.get(img_url)
+            img = Image.open(BytesIO(response.content))
+
+        st.image(img, caption="Uploaded Image", use_column_width=True)
+
+        # Preprocess Image
+        img = img.resize((224, 224))
+        img = np.array(img) / 255.0
+        img = np.expand_dims(img, axis=0)
+
+        # Predict
+        prediction = model.predict(img)
+        class_idx = np.argmax(prediction)
+        confidence = prediction[0][class_idx] * 100
+
+        # Display Result
+        st.subheader("✅ Prediction: " + labels[class_idx])
+        st.success(f"🌱 This waste is **{labels[class_idx]}!**")
+        st.write(f"📊 **Confidence Scores:**\n- **{labels[0]}:** {prediction[0][0] * 100:.2f}%\n- **{labels[1]}:** {prediction[0][1] * 100:.2f}%")
+
+    except Exception as e:
+        st.error(f"Error processing the image: {e}")
+
