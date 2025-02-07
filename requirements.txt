@@ -1,7 +1,6 @@
-pip==24.0  # Avoid latest pip update issues
-streamlit==1.42.0  # Stable version
-tensorflow==2.16.0  # Compatible with Python 3.12
+streamlit
+tensorflow==2.12.0
 numpy
-pandas
-matplotlib
-opencv-python
+opencv-python-headless
+pillow
+requests
