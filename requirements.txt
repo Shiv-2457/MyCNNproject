@@ -1,4 +1,6 @@
-streamlit
-tensorflow==2.9.0
-opencv-python-headless
+streamlit==1.42.0
+tensorflow==2.16.0  # Use latest compatible version
 numpy
+pandas
+matplotlib
+opencv-python
